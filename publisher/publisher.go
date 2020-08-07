@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -15,10 +17,25 @@ var rabbitPort = os.Getenv("RABBIT_PORT")
 var rabbitUser = os.Getenv("RABBIT_USERNAME")
 var rabbitPassword = os.Getenv("RABBIT_PASSWORD")
 
+// Data ...
+type Data struct {
+	Lang string `json:"lang"`
+	Code string `json:"code"`
+}
+
 func main() {
 	router := httprouter.New()
-	router.POST("/publish/:message", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-		message := p.ByName("message")
+	router.POST("/publish", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Fatalf("%s: %s", "Failed to read the body of the request", err)
+		}
+
+		var data Data
+		json.Unmarshal(body, &data)
+
+		message := fmt.Sprint(data)
 		fmt.Println("Received message:" + message)
 
 		amqpDialAddr := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitUser, rabbitPassword, rabbitHost, rabbitPort)
@@ -54,7 +71,7 @@ func main() {
 			false,
 			amqp.Publishing{
 				ContentType: "text/plain",
-				Body:        []byte(message),
+				Body:        body,
 			},
 		)
 		if err != nil {
