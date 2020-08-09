@@ -49,7 +49,49 @@ Build the publisher container:
 
 Run the publisher container instance:
 
-``bash
-  docker run -it --rm --network rabbitmq -e RABBIT_HOST=localhost -e RABBIT_PORT=5672 -e RABBIT_USERNAME=nikolasmelui -e RABBIT_PASSWORD=password -p 8081:8081 .
+```bash
+  docker run -it --rm --network rabbitmq -e RABBIT_HOST=localhost -e RABBIT_PORT=5672 -e RABBIT_USERNAME=nikolasmelui -e RABBIT_PASSWORD=password -p 8081:8081 nikolasmelui/rabbitmq-go-publisher:v1.0.0
+```
+-->
+
+## Consumer
+
+Build the consumer application:
+
+```bash
+  go build ./consumer/consumer.go
+```
+
+or
+
+```bash
+  make build_consumer
+```
+
+Run the consumer application:
+
+```bash
+  RABBIT_HOST=localhost RABBIT_PORT=5672 RABBIT_USERNAME=username RABBIT_PASSWORD=password ./consumer
+```
+
+or
+
+```bash
+  RABBIT_HOST=localhost RABBIT_PORT=5672 RABBIT_USERNAME=username RABBIT_PASSWORD=password make run_consumer
+```
+
+<!--
+### Dockerize Consumer
+
+Build the consumer container:
+
+```bash
+  docker build . -t  nikolasmelui/rabbitmq-go-consumer:v1.0.0
+```
+
+Run the consumer container instance:
+
+```bash
+  docker run -it --rm --network rabbitmq -e RABBIT_HOST=localhost -e RABBIT_PORT=5672 -e RABBIT_USERNAME=nikolasmelui -e RABBIT_PASSWORD=password -p 8081:8081 nikolasmelui/rabbitmq-go-consumer:v1.0.0
 ```
 -->
